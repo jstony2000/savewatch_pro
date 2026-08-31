@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SaveWatch+ 2 Ultimate Setup Hub</title>
+  <style>
+    :root {
+      --bg-main: #070b14;
+      --bg-card: #111927;
+      --bg-card-secondary: #1a2333;
+      --bg-input: #0b111e;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --accent: #10b981;
+      --accent-muted: rgba(16, 185, 129, 0.15);
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --purple: #a855f7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+      --border-focus: #38bdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 12px;
+    }
+
+    .app-container {
+      max-width: 100%;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 95vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0b111e 0%, #1e293b 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    header h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    header p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .progress-track {
+      background: #1e293b;
+      height: 5px;
+      width: 100%;
+    }
+    .progress-bar {
+      background: var(--accent);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+
+    .step-nav {
+      display: flex;
+      overflow-x: auto;
+      background: #090e17;
+      border-bottom: 1px solid var(--border);
+      padding: 8px 10px;
+      gap: 6px;
+      scrollbar-width: none;
+    }
+    .step-nav::-webkit-scrollbar { display: none; }
+
+    .step-pill {
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .step-pill.active {
+      background: var(--primary);
+      color: #070b14;
+      border-color: var(--primary);
+      font-weight: 700;
+    }
+
+    .step-pill.completed {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-muted);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 16px;
+      flex: 1;
+    }
+
+    @media (min-width: 850px) {
+      .workspace {
+        grid-template-columns: 1.15fr 0.85fr;
+      }
+    }
+
+    .panel-instructions {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .phase-badge {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .phase-title {
+      font-size: 1.15rem;
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    .instruction-card {
+      background: var(--bg-card-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 0.85rem;
+    }
+
+    .instruction-card ol, .instruction-card ul {
+      padding-left: 18px;
+      margin-top: 6px;
+      color: #cbd5e1;
+    }
+
+    .instruction-card li { margin-bottom: 6px; }
+
+    .completion-toggle {
+      background: #0b111e;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .completion-toggle.done {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: var(--accent);
+    }
+
+    .completion-toggle input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .completion-toggle label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .data-box {
+      background: #0b111e;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .data-box h4 {
+      font-size: 0.82rem;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .form-group { margin-bottom: 10px; }
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 0.82rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-input);
+      color: #ffffff;
+      outline: none;
+    }
+
+    .form-group input:focus { border-color: var(--primary); }
+
+    .btn-native {
+      background: #1e293b;
+      color: var(--primary);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .btn-native:hover {
+      background: var(--primary);
+      color: #070b14;
+    }
+
+    .btn-native.success {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-muted);
+    }
+
+    .btn-native.purple {
+      color: var(--purple);
+      border-color: var(--purple);
+      background: rgba(168, 85, 247, 0.15);
+    }
+
+    .panel-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #090e17;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .mockup-watch {
+      width: 230px;
+      height: 265px;
+      background: #020617;
+      border-radius: 40px;
+      border: 4px solid #334155;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .watch-screen {
+      background: #000000;
+      flex: 1;
+      border-radius: 26px;
+      padding: 8px;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 0.7rem;
+    }
+
+    .mockup-phone {
+      width: 230px;
+      height: 330px;
+      background: #020617;
+      border-radius: 32px;
+      border: 3px solid #334155;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-screen {
+      background: #0f172a;
+      flex: 1;
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      font-size: 0.7rem;
+    }
+
+    .phone-topbar {
+      background: #1e293b;
+      color: var(--primary);
+      padding: 6px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .phone-body {
+      padding: 8px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #090e17;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary { background: var(--primary); color: #070b14; }
+    .btn-secondary { background: #1e293b; color: var(--text-main); }
+    .btn:disabled { background: #111927; color: #475569; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <header>
+    <div>
+      <h1>SaveWatch Plus 2 • Setup Hub Pro</h1>
+      <p>Red Digi Mobil • Poio • IA, MeteoKid, WhatsApp, GPS & Control Total</p>
+    </div>
+  </header>
+
+  <div class="progress-track">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <div class="step-nav" id="step-nav">
+    <button class="step-pill active" onclick="setStep(0)"><span>1. SIM</span></button>
+    <button class="step-pill" onclick="setStep(1)"><span>2. Hardware</span></button>
+    <button class="step-pill" onclick="setStep(2)"><span>3. Wi-Fi</span></button>
+    <button class="step-pill" onclick="setStep(3)"><span>4. APN & SMS</span></button>
+    <button class="step-pill" onclick="setStep(4)"><span>5. App Oficial</span></button>
+    <button class="step-pill" onclick="setStep(5)"><span>6. Agenda SOS</span></button>
+    <button class="step-pill" onclick="setStep(6)"><span>7. GPS & Calibración</span></button>
+    <button class="step-pill" onclick="setStep(7)"><span>8. WhatsApp Pro</span></button>
+    <button class="step-pill" onclick="setStep(8)"><span>9. IA Educativa</span></button>
+    <button class="step-pill" onclick="setStep(9)"><span>10. MeteoKid</span></button>
+    <button class="step-pill" onclick="setStep(10)"><span>11. Modo Clase</span></button>
+    <button class="step-pill" onclick="setStep(11)"><span>12. Rutinas</span></button>
+  </div>
+
+  <div class="workspace">
+    <div class="panel-instructions">
+      <div>
+        <span class="phase-badge" id="step-badge">Fase 1 / 12</span>
+        <h2 class="phase-title" id="step-title"></h2>
+      </div>
+
+      <div class="completion-toggle" id="completion-box" onclick="toggleCompletion()">
+        <input type="checkbox" id="chk-done" onclick="event.stopPropagation(); toggleCompletion();">
+        <label for="chk-done" id="chk-label">Marcar paso como REALIZADO</label>
+      </div>
+
+      <div class="instruction-card" id="instruction-content"></div>
+      <div class="data-box" id="data-container"></div>
+    </div>
+
+    <div class="panel-preview">
+      <span style="font-size:0.7rem; color:var(--text-muted); margin-bottom:8px;" id="preview-tag"></span>
+      <div id="device-wrapper"></div>
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="btn btn-secondary" id="btn-prev" onclick="moveStep(-1)" disabled>Anterior</button>
+    <button class="btn btn-primary" id="btn-next" onclick="moveStep(1)">Siguiente</button>
+  </div>
+</div>
+
+<script>
+  const defaultData = {
+    phoneWatch: "600 00 00 00",
+    wifiSsid: "MiFibra_Poio_5G",
+    wifiPass: "ClaveWifiCasa2026",
+    apnName: "DIGI",
+    apnServer: "internet.digimobil.es",
+    sos1: "611 11 11 11",
+    sos1Name: "Papá",
+    sos2: "622 22 22 22",
+    sos2Name: "Vanesa",
+    sos3: "986 00 00 00",
+    sos3Name: "Casa",
+    contact1: "Papá",
+    contact2: "Vanesa",
+    appEmail: "tucorreo@gmail.com",
+    regCode: "SWPLUS2-884920",
+    gpsInterval: "10",
+    homeFenceRadius: "250",
+    schoolFenceRadius: "300",
+    aiFilterLevel: "Estudio y Deberes (10 Años)",
+    meteoCity: "Poio (San Salvador)",
+    schoolTimeStart: "09:00",
+    schoolTimeEnd: "14:00",
+    schoolDays: "Lunes a Viernes",
+    alarm1Time: "07:45",
+    alarm1Label: "Despertador Colegio",
+    alarm2Time: "20:30",
+    alarm2Label: "Mochila y Deberes",
+    autoShutdown: "22:00",
+    autoBoot: "07:30"
+  };
+
+  const defaultCompleted = new Array(12).fill(false);
+
+  let configData = JSON.parse(localStorage.getItem("sw_pro12_data")) || defaultData;
+  let completedSteps = JSON.parse(localStorage.getItem("sw_pro12_completed")) || defaultCompleted;
+
+  const steps = [
+    {
+      badge: "Fase 1 de 12 • Móvil Tutor",
+      title: "Desbloqueo de PIN en SIM Digi",
+      instructions: `
+        <ol>
+          <li>Introduce la Nano-SIM de Digi en tu smartphone.</li>
+          <li>Accede a <b>Ajustes > Seguridad > Bloqueo de SIM</b> y desactiva la solicitud del PIN.</li>
+          <li>Navega por una web sin Wi-Fi y haz una llamada corta para confirmar que la línea está activa.</li>
+        </ol>
+      `,
+      dataInputs: [
+        { label: "Número SIM Digi del reloj:", key: "phoneWatch", type: "tel" }
+      ],
+      deviceType: "phone",
+      deviceTag: "Ajustes de SIM",
+      renderScreen: () => `
+        <div class="phone-topbar">Seguridad SIM</div>
+        <div class="phone-body">
+          <div style="background:#1e293b; padding:8px; border-radius:6px;">
+            <span>Bloqueo PIN: </span><b style="color:#f87171;">DESACTIVADO ⚪</b>
+          </div>
+          <div style="font-size:0.65rem; color:#94a3b8; margin-top:6px;">Línea: <b>${configData.phoneWatch}</b></div>
+          <div style="background:#064e3b; padding:6px; border-radius:4px; font-size:0.65rem; color:#a7f3d0; margin-top:8px;">✓ SIM liberada para SaveWatch Plus 2</div>
+        </div>
+      `
+    },
+    {
+      badge: "Fase 2 de 12 • Hardware",
+      title: "Montaje y Encendido",
+      instructions: `
+        <ul>
+          <li><b>Apaga totalmente el reloj</b> antes de abrir la bandeja lateral.</li>
+          <li>Inserta la tarjeta Nano-SIM con los pines dorados hacia arriba y la muesca encajada.</li>
+          <li>Asegura el cierre estanco de goma y mantén pulsado el botón para encender.</li>
+        </ul>
+      `,
+      dataInputs: [
+        { label: "RegCode (Pegatina trasera / caja):", key: "regCode", type: "text" }
+      ],
+      deviceType: "watch",
+      deviceTag: "SaveWatch Plus 2",
+      renderScreen: () => `
+        <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:#94a3b8;">
+          <span>09:30</span><span style="color:#38bdf8;">📶 SIM OK</span>
+        </div>
+        <div style="text-align:center; margin:auto 0;">
+          <div style="font-size:1.5rem;">⌚</div>
+          <div style="font-weight:bold; color:#38bdf8;">SaveWatch Plus 2</div>
+          <div style="font-size:0.6rem; color:#94a3b8;">RegCode: ${configData.regCode}</div>
+        </div>
+        <div style="background:#064e3b; padding:3px; border-radius:4px; font-size:0.6rem; text-align:center; color:#34d399;">● SIM Detectada</div>
+      `
+    },
+    {
+      badge: "Fase 3 de 12 • Red Local",
+      title: "Wi-Fi del Piso en Poio",
+      instructions: `
+        <p>Selecciona tu red doméstica para volcar las credenciales al reloj y ahorrar datos/batería en casa:</p>
+      `,
+      customAction: () => `
+        <div style="display:flex; gap:6px; margin-bottom:10px;">
+          <button class="btn-native" onclick="selectWifi('MiFibra_Poio_5G', 'ClaveWifiCasa2026')">📡 Wi-Fi Poio (5G)</button>
+          <button class="btn-native" onclick="selectWifi('MiFibra_Poio_Plus', 'ClaveWifiCasa2026')">📡 Wi-Fi Poio (2.4G)</button>
+        </div>
+      `,
+      dataInputs: [
+        { label: "Nombre de Red (SSID):", key: "wifiSsid", type: "text" },
+        { label: "Contraseña:", key: "wifiPass", type: "text" }
+      ],
+      deviceType: "watch",
+      deviceTag: "Wi-Fi SaveWatch Plus 2",
+      renderScreen: () => `
+        <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:#94a3b8;">
+          <span>09:32</span><span style="color:#10b981;">🛜 Conectado</span>
+        </div>
+        <div style="margin:auto 0; text-align:left; font-size:0.65rem;">
+          <div style="color:#94a3b8;">RED:</div>
+          <div style="font-weight:bold; color:#38bdf8;">${configData.wifiSsid}</div>
+          <div style="background:#0f172a; padding:4px; border-radius:4px; margin-top:2px;">Clave: ${configData.wifiPass}</div>
+        </div>
+        <div style="background:#064e3b; color:#a7f3d0; padding:3px; border-radius:4px; font-size:0.6rem; text-align:center;">✓ Wi-Fi Vinculado</div>
+      `
+    },
+    {
+      badge: "Fase 4 de 12 • Red Móvil 4G",
+      title: "APN Digi y Diagnóstico Remoto",
+      instructions: `
+        <p>Dispara con 1 toque el SMS nativo con los parámetros oficiales de Digi o el test TS[span_0](start_span)[span_0](end_span):</p>
+      `,
+      customAction: () => `
+        <div style="margin-bottom:10px; display:flex; gap:6px; flex-wrap:wrap;">
+          <a class="btn-native success" id="btn-send-sms" href="sms:${configData.phoneWatch.replace(/\s+/g, '')}?body=pw,123456,apn,internet.digimobil.es,,,21422%23">
+            ✉️ Enviar SMS de APN Digi
+          </a>
+          <a class="btn-native" href="sms:${configData.phoneWatch.replace(/\s+/g, '')}?body=pw,123456,ts%23">
+            🔍 Diagnóstico TS
+          </a>
+        </div>
+      `,
+      dataInputs: [
+        { label: "Servidor APN:", key: "apnServer", type: "text" }
+      ],
+      deviceType: "phone",
+      deviceTag: "SMS Automático",
+      renderScreen: () => `
+        <div class="phone-topbar">SMS → ${configData.phoneWatch}</div>
+        <div class="phone-body">
+          <div style="background:#0284c7; color:white; padding:6px; border-radius:8px 8px 0 8px; font-size:0.6rem; margin-top:auto; align-self:flex-end;">
+            pw,123456,apn,internet.digimobil.es,,,21422#
+          </div>
+          <div style="background:#1e293b; color:#38bdf8; padding:6px; border-radius:8px 8px 8px 0; font-size:0.6rem; margin-top:4px;">
+            apn:... OK!
+          </div>
+          <div style="color:#10b981; font-size:0.6rem; text-align:center; font-weight:bold;">✓ 4G Digi Listo</div>
+        </div>
+      `
+    },
+    {
+      badge: "Fase 5 de 12 • App Oficial",
+      title: "Descarga de SaveFamily",
+      instructions: `
+        <p>Abre directamente la ficha oficial en la tienda de apps de tu terminal:</p>
+      `,
+      customAction: () => `
+        <div style="margin-bottom:10px; display:flex; gap:6px; flex-wrap:wrap;">
+          <a class="btn-native" href="https://play.google.com/store/apps/details?id=com.savefamily.app" target="_blank">
+            🤖 Google Play (Android)
+          </a>
+          <a class="btn-native" href="https://apps.apple.com/es/app/savefamily/id1527786438" target="_blank">
+            🍏 App Store (iPhone)
+          </a>
+        </div>
+      `,
+      dataInputs: [
+        { label: "Tu correo en SaveFamily:", key: "appEmail", type: "email" }
+      ],
+      deviceType: "phone",
+      deviceTag: "App SaveFamily",
+      renderScreen: () => `
+        <div class="phone-topbar">SaveFamily • Login</div>
+        <div class="phone-body" style="text-align:center; justify-content:center;">
+          <div style="font-size:1.2rem;">📷</div>
+          <div style="font-size:0.65rem; color:#38bdf8; font-weight:bold;">Escanear QR Reloj</div>
+          <div style="font-size:0.6rem; color:#94a3b8;">Tutor: ${configData.appEmail}</div>
+        </div>
+      `
+    },
+    {
+      badge: "Fase 6 de 12 • Seguridad Telefónica",
+      title: "Agenda Blanca y Números SOS",
+      instructions: `
+        <p>Usa el selector nativo para importar números de tu agenda sin escribirlos a mano:</p>
+      `,
+      customAction: () => `
+        <div style="margin-bottom:10px;">
+          <button class="btn-native success" onclick="pickNativeContact('sos1')">
+            📇 Importar SOS 1 del Móvil
+          </button>
+        </div>
+      `,
+      dataInputs: [
+        { label: "SOS 1 (Papá / Tutor):", key: "sos1", type: "text" },
+        { label: "SOS 2 (Vanesa):", key: "sos2", type: "text" },
+        { label: "SOS 3 (Casa / Abuelos):", key: "sos3", type: "text" }
+      ],
+      deviceType: "phone",
+      deviceTag: "Agenda & SOS",
+      renderScreen: () => `
+        <div class="phone-topbar">Agenda Segura</div>
+        <div class="phone-body">
+          <div style="background:#1e293b; padding:4px; border-radius:4px; font-size:0.6rem;">1. ${configData.sos1}</div>
+          <div style="background:#1e293b; padding:4px; border-radius:4px; font-size:0.6rem;">2. ${configData.sos2}</div>
+          <div style="background:#1e293b; padding:4px; border-radius:4px; font-size:0.6rem;">3. ${configData.sos3}</div>
+          <div style="background:#064e3b; padding:4px; border-radius:4px; font-size:0.6rem; color:#a7f3d0; text-align:center;">Filtro Desconocidos: ON ✓</div>
+        </div>
+      `
+    },
+    {
+      badge: "Fase 7 de 12 • Ubicación Multicapa",
+      title: "Calibración GPS y Geovallas",
+      instructions: `
+        <h4>Sistema de Localización Triple:</h4>
+        <ol>
+          <li><b>GPS Satelital:</b> Máxima precisión (±5m) en exteriores.</li>
+          <li><b>Posicionamiento Wi-Fi:</b> Triangula redes cercanas cuando está bajo techo.</li>
+          <li><b>LBS (Antenas de Telefonía):</b> Respaldo continuo en túneles o sótanos.</li>
+          <li><b>Geovallas:</b> Marca perímetros seguros con alertas de entrada/salida automáticas.</li>
+        </ol>
+      `,
+      dataInputs: [
+        { label: "Intervalo GPS (minutos):", key: "gpsInterval", type: "number" },
+        { label: "Radio Geovalla Casa (metros):", key: "homeFenceRadius", type: "number" },
+        { label: "Radio Geovalla Colegio (metros):", key: "schoolFenceRadius", type: "number" }
+      ],
+      deviceType: "phone",
+      deviceTag: "Mapa GPS SaveFamily",
+      renderScreen: () => `
+        <div class="phone-topbar">GPS Satelital Multi-Modo</div>
+        <div class="phone-body">
+          <div style="background:#1e293b; padding:6px; border-radius:4px; text-align:center;">
+            <div style="color:#38bdf8; font-weight:bold; font-size:0.7rem;">📍 Poio, San Salvador</div>
+            <div style="font-size:0.6rem; color:#94a3b8;">Modo: GPS + Wi-Fi + LBS</div>
+          </div>
+          <div style="font-size:0.6rem; color:#cbd5e1; margin-top:4px;">
+            • Casa: ${configData.homeFenceRadius}m [Activo]<br>
+            • Colegio: ${configData.schoolFenceRadius}m [Activo]
+          </div>
+        </div>
+      `
+    },
+    {
+      badge: "Fase 8 de 12 • Mensajería Segura",
+      title: "Configuración Oficial de WhatsApp",
+      instructions: `
+        <h4>WhatsApp en SaveWatch Plus 2:</h4>
+        <ol>
+          <li>Entra en SaveFamily > <b>Tienda de Aplicaciones</b> > Instala <b>WhatsApp</b> en el reloj.</li>
+          <li>Abre la app en la pantalla del reloj e introduce el número de la SIM Digi.</li>
+          <li>El código de 6 dígitos llegará por SMS a la bandeja de entrada del SaveWatch Plus 2. Escríbelo en pantalla.</li>
+          <li>El menor podrá enviar audios de voz y texto a los contactos autorizados. Puedes bloquear su uso de forma remota.</li>
+        </ol>
+      `,
+      dataInputs: [
+        { label: "Chat Principal:", key: "contact1", type: "text" },
+        { label: "Chat Secundario:", key: "contact2", type: "text" }
+      ],
+      deviceType: "watch",
+      deviceTag: "WhatsApp SaveWatch Plus 2",
+      renderScreen: () => `
+        <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:#94a3b8;">
+          <span>10:00</span><span style="color:#22c55e;">WhatsApp 4G</span>
+        </div>
+        <div style="margin:auto 0; text-align:left; font-size:0.65rem;">
+          <div style="background:#1e293b; padding:4px; border-radius:4px; margin-bottom:3px; border-left:3px solid #22c55e;">
+            <div style="font-weight:bold; color:#22c55e;">${configData.contact1}</div>
+            <div style="font-size:0.55rem; color:#94a3b8;">Nota de voz enviada</div>
+          </div>
+          <div style="background:#1e293b; padding:4px; border-radius:4px; border-left:3px solid #22c55e;">
+            <div style="font-weight:bold; color:#22c55e;">${configData.contact2}</div>
+          </div>
+        </div>
+        <div style="background:#064e3b; color:#a7f3d0; padding:3px; border-radius:4px; font-size:0.6rem; text-align:center;">✓ Supervisado vía App</div>
+      `
+    },
+    {
+      badge: "Fase 9 de 12 • IA Educativa Oficial",
+      title: "Asistente IA Seguro SaveFamily",
+      instructions: `
+        <h4>Inteligencia Artificial para 10 Años:</h4>
+        <ul>
+          <li>El SaveWatch Plus 2 incorpora un asistente de IA integrado diseñado para responder dudas escolares, curiosidades científicas e idiomas.</li>
+          <li><b>Filtro Ético y Parental:</b> Bloquea automáticamente cualquier temática sensible, violenta o inapropiada para menores.</li>
+          <li><b>Interacción por voz:</b> El niño pulsa el micrófono y realiza consultas naturales (ej. <i>"¿Cuál es la distancia a la luna?"</i> o <i>"¿Cómo se dice colegio en inglés?"</i>).</li>
+        </ul>
+      `,
+      customAction: () => `
+        <div style="margin-bottom:10px;">
+          <button class="btn-native purple">🤖 IA Activa con Filtro Escolar</button>
+        </div>
+      `,
+      dataInputs: [
+        { label: "Nivel del Filtro de IA:", key: "aiFilterLevel", type: "text" }
+      ],
+      deviceType: "watch",
+      deviceTag: "IA Educativa en el Reloj",
+      renderScreen: () => `
+        <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:#94a3b8;">
+          <span>16:30</span><span style="color:#a855f7;">IA SaveFamily</span>
+        </div>
+        <div style="text-align:center; margin:auto 0;">
+          <div style="font-size:1.6rem;">🤖</div>
+          <div style="font-size:0.65rem; color:#a855f7; font-weight:bold;">"Pregúntame algo"</div>
+          <div style="font-size:0.55rem; color:#94a3b8; margin-top:2px;">Filtro: ${configData.aiFilterLevel}</div>
+        </div>
+        <div style="background:#3b0764; color:#e9d5ff; padding:3px; border-radius:4px; font-size:0.55rem; text-align:center;">Seguro para Menores ✓</div>
+      `
+    },
+    {
+      badge: "Fase 10 de 12 • Función MeteoKid",
+      title: "Clima Interactivo MeteoKid",
+      instructions: `
+        <h4>Previsión Meteorológica para Niños:</h4>
+        <ol>
+          <li><b>Sincronización GPS:</b> MeteoKid actualiza la previsión del tiempo basada en la ubicación exacta del reloj en Poio.</li>
+          <li><b>Iconografía Dinámica:</b> Muestra avatares animados y recomendaciones sobre qué ropa vestir (ej. llevar paraguas, chubasquero o gorra).</li>
+          <li>Se actualiza automáticamente cada vez que el reloj se conecta a la red Wi-Fi o datos 4G Digi.</li>
+        </ol>
+      `,
+      dataInputs: [
+        { label: "Ciudad / Municipio Sincronizado:", key: "meteoCity", type: "text" }
+      ],
+      deviceType: "watch",
+      deviceTag: "MeteoKid SaveWatch Plus 2",
+      renderScreen: () => `
+        <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:#94a3b8;">
+          <span>MeteoKid</span><span style="color:#38bdf8;">Poio 🌤️</span>
+        </div>
+        <div style="text-align:center; margin:auto 0;">
+          <div style="font-size:1.8rem;">🌤️ 22°C</div>
+          <div style="font-size:0.65rem; color:#38bdf8; font-weight:bold;">${configData.meteoCity}</div>
+          <div style="font-size:0.55rem; color:#94a3b8;">"Cielo despejado con brisa marina"</div>
+        </div>
+        <div style="background:#0c4a6e; color:#bae6fd; padding:3px; border-radius:4px; font-size:0.55rem; text-align:center;">👕 Ropa ligera recomendada</div>
+      `
+    },
+    {
+      badge: "Fase 11 de 12 • Horario Lectivo",
+      title: "Modo Clase Antidistracción",
+      instructions: `
+        <p>Bloquea la pantalla y el sonido durante las clases en el colegio (el botón de auxilio SOS permanece siempre activo):</p>
+      `,
+      dataInputs: [
+        { label: "Hora inicio clase:", key: "schoolTimeStart", type: "time" },
+        { label: "Hora fin clase:", key: "schoolTimeEnd", type: "time" },
+        { label: "Días activos:", key: "schoolDays", type: "text" }
+      ],
+      deviceType: "watch",
+      deviceTag: "Modo Clase",
+      renderScreen: () => `
+        <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:#94a3b8;">
+          <span>11:15</span><span style="color:#f59e0b;">🔕 Clase</span>
+        </div>
+        <div style="text-align:center; margin:auto 0;">
+          <div style="font-size:1.6rem; font-weight:bold;">11:15</div>
+          <div style="font-size:0.6rem; color:#f59e0b;">PANTALLA BLOQUEADA</div>
+          <div style="font-size:0.55rem; color:#94a3b8;">${configData.schoolTimeStart} - ${configData.schoolTimeEnd}</div>
+        </div>
+        <div style="background:#451a03; padding:3px; border-radius:4px; font-size:0.55rem; text-align:center; color:#fde68a;">SOS Operativo al 100%</div>
+      `
+    },
+    {
+      badge: "Fase 12 de 12 • Hábitos & Autonomía",
+      title: "Alarmas y Apagado Programado",
+      instructions: `
+        <p>Fija las alarmas de rutina diaria y programa el apagado nocturno para duplicar la duración de la batería:</p>
+      `,
+      dataInputs: [
+        { label: "Alarma Despertador:", key: "alarm1Time", type: "time" },
+        { label: "Apagado Nocturno Automático:", key: "autoShutdown", type: "time" }
+      ],
+      deviceType: "phone",
+      deviceTag: "Rutinas & Energía",
+      renderScreen: () => `
+        <div class="phone-topbar">Rutinas & Gestión Energética</div>
+        <div class="phone-body">
+          <div style="background:#1e293b; padding:5px; border-radius:4px; font-size:0.6rem;">
+            ⏰ <b>${configData.alarm1Time}</b> - Despertador [ON]
+          </div>
+          <div style="background:#064e3b; padding:5px; border-radius:4px; font-size:0.6rem; color:#a7f3d0; margin-top:4px;">
+            🌙 <b>Apagado:</b> ${configData.autoShutdown}h<br>☀️ <b>Encendido:</b> ${configData.autoBoot}h
+          </div>
+        </div>
+      `
+    }
+  ];
+
+  let currentStep = 0;
+
+  function renderInputs(inputs, customAction) {
+    const container = document.getElementById("data-container");
+    container.innerHTML = `<h4>📝 Parámetros & Acciones en Vivo:</h4>`;
+    
+    if (customAction) {
+      container.innerHTML += customAction();
+    }
+
+    inputs.forEach(input => {
+      const group = document.createElement("div");
+      group.className = "form-group";
+      group.innerHTML = `
+        <label>${input.label}</label>
+        <input type="${input.type}" value="${configData[input.key] || ''}" oninput="updateData('${input.key}', this.value)">
+      `;
+      container.appendChild(group);
+    });
+  }
+
+  function updateData(key, value) {
+    configData[key] = value;
+    localStorage.setItem("sw_pro12_data", JSON.stringify(configData));
+    renderDeviceScreen();
+    
+    const smsLink = document.getElementById("btn-send-sms");
+    if (smsLink && key === "phoneWatch") {
+      const cleanPhone = value.replace(/\s+/g, '');
+      smsLink.href = `sms:${cleanPhone}?body=pw,123456,apn,internet.digimobil.es,,,21422%23`;
+    }
+  }
+
+  function selectWifi(ssid, pass) {
+    updateData("wifiSsid", ssid);
+    updateData("wifiPass", pass);
+    updateStepView();
+  }
+
+  async function pickNativeContact(keyNumber) {
+    if ('contacts' in navigator && 'ContactsManager' in window) {
+      try {
+        const props = ['name', 'tel'];
+        const contacts = await navigator.contacts.select(props, { multiple: false });
+        if (contacts.length > 0) {
+          const contact = contacts[0];
+          const name = contact.name ? contact.name[0] : 'Contacto';
+          const tel = contact.tel ? contact.tel[0].replace(/\s+/g, '') : '';
+          updateData(keyNumber, `${tel} (${name})`);
+          updateStepView();
+        }
+      } catch (ex) {
+        alert("Selección manual: escribe el teléfono en la casilla.");
+      }
+    } else {
+      alert("Introduce el número de teléfono directamente en la casilla.");
+    }
+  }
+
+  function toggleCompletion() {
+    completedSteps[currentStep] = !completedSteps[currentStep];
+    localStorage.setItem("sw_pro12_completed", JSON.stringify(completedSteps));
+    updateStepView();
+  }
+
+  function renderDeviceScreen() {
+    const s = steps[currentStep];
+    const wrapper = document.getElementById("device-wrapper");
+    document.getElementById("preview-tag").innerText = s.deviceTag;
+
+    if (s.deviceType === "watch") {
+      wrapper.innerHTML = `<div class="mockup-watch"><div class="watch-screen">${s.renderScreen()}</div></div>`;
+    } else {
+      wrapper.innerHTML = `<div class="mockup-phone"><div class="phone-screen">${s.renderScreen()}</div></div>`;
+    }
+  }
+
+  function updateStepView() {
+    const s = steps[currentStep];
+    
+    document.getElementById("step-badge").innerText = s.badge;
+    document.getElementById("step-title").innerText = s.title;
+    document.getElementById("instruction-content").innerHTML = s.instructions;
+
+    const isDone = completedSteps[currentStep];
+    const chkBox = document.getElementById("chk-done");
+    const compBox = document.getElementById("completion-box");
+    const chkLabel = document.getElementById("chk-label");
+
+    chkBox.checked = isDone;
+    if (isDone) {
+      compBox.classList.add("done");
+      chkLabel.innerHTML = `✓ Paso <span style="color:var(--accent);">REALIZADO</span> (Guardado)`;
+    } else {
+      compBox.classList.remove("done");
+      chkLabel.innerHTML = `Marcar paso como <b>REALIZADO</b>`;
+    }
+
+    renderInputs(s.dataInputs, s.customAction);
+    renderDeviceScreen();
+
+    const pills = document.querySelectorAll(".step-pill");
+    pills.forEach((p, idx) => {
+      p.className = "step-pill";
+      if (idx === currentStep) p.classList.add("active");
+      if (completedSteps[idx]) {
+        p.classList.add("completed");
+        p.querySelector("span").innerText = `${idx + 1}. ✓`;
+      } else {
+        p.querySelector("span").innerText = `${idx + 1}. ${steps[idx].title.split(" ")[0]}`;
+      }
+    });
+
+    const doneCount = completedSteps.filter(Boolean).length;
+    const progressPercent = (doneCount / steps.length) * 100;
+    document.getElementById("progress-bar").style.width = `${progressPercent}%`;
+
+    document.getElementById("btn-prev").disabled = (currentStep === 0);
+    const nextBtn = document.getElementById("btn-next");
+    nextBtn.innerText = currentStep === steps.length - 1 ? (doneCount === steps.length ? "¡12 Fases Completadas! ✓" : "Finalizar") : "Siguiente →";
+  }
+
+  function setStep(index) {
+    currentStep = index;
+    updateStepView();
+  }
+
+  function moveStep(delta) {
+    const newIdx = currentStep + delta;
+    if (newIdx >= 0 && newIdx < steps.length) {
+      currentStep = newIdx;
+      updateStepView();
+    }
+  }
+
+  updateStepView();
+</script>
+
+</body>
+</html>
