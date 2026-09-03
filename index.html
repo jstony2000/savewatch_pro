@@ -58,7 +58,7 @@
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
     }
 
     header h1 {
@@ -70,6 +70,12 @@
     header p {
       font-size: 0.75rem;
       color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
     .progress-track {
@@ -109,6 +115,7 @@
       display: flex;
       align-items: center;
       gap: 4px;
+      transition: all 0.2s;
     }
 
     .step-pill.active {
@@ -188,6 +195,7 @@
       align-items: center;
       gap: 10px;
       cursor: pointer;
+      transition: all 0.2s;
     }
 
     .completion-toggle.done {
@@ -199,6 +207,7 @@
       width: 18px;
       height: 18px;
       accent-color: var(--accent);
+      cursor: pointer;
     }
 
     .completion-toggle label {
@@ -239,6 +248,7 @@
       background: var(--bg-input);
       color: #ffffff;
       outline: none;
+      transition: border-color 0.2s;
     }
 
     .form-group input:focus { border-color: var(--primary); }
@@ -257,6 +267,7 @@
       gap: 6px;
       white-space: nowrap;
       text-decoration: none;
+      transition: all 0.2s;
     }
 
     .btn-native:hover {
@@ -288,14 +299,15 @@
     }
 
     .mockup-watch {
-      width: 235px;
-      height: 275px;
+      width: 240px;
+      height: 280px;
       background: #020617;
       border-radius: 40px;
       border: 4px solid #334155;
       padding: 10px;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
 
     .watch-screen {
@@ -319,6 +331,7 @@
       padding: 6px;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
 
     .phone-screen {
@@ -361,10 +374,12 @@
       font-size: 0.8rem;
       cursor: pointer;
       border: none;
+      transition: all 0.2s;
     }
     .btn-primary { background: var(--primary); color: #070b14; }
+    .btn-primary:hover { background: var(--primary-hover); }
     .btn-secondary { background: #1e293b; color: var(--text-main); }
-    .btn:disabled { background: #111927; color: #475569; }
+    .btn:disabled { background: #111927; color: #475569; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -374,6 +389,11 @@
     <div>
       <h1>SaveWatch Plus 2 • Setup Hub Pro</h1>
       <p>Red Digi Mobil • Poio • IA, MeteoKid, WhatsApp, GPS & Control Total</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-native success" onclick="shareViaUrl()">🔗 Compartir / Guardar en Enlace</button>
+      <button class="btn-native" onclick="exportConfig()">📤 Copiar Código</button>
+      <button class="btn-native" onclick="importConfig()">📥 Pegar Código</button>
     </div>
   </header>
 
@@ -455,8 +475,28 @@
 
   const defaultCompleted = new Array(12).fill(false);
 
-  let configData = JSON.parse(localStorage.getItem("sw_hub_v2_data")) || defaultData;
-  let completedSteps = JSON.parse(localStorage.getItem("sw_hub_v2_completed")) || defaultCompleted;
+  // 1. Carga inicial: Si hay parámetro en la URL (?sync=...), carga esos datos
+  function loadUrlData() {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const syncData = urlParams.get('sync');
+      if (syncData) {
+        const decoded = JSON.parse(decodeURIComponent(escape(atob(syncData))));
+        if (decoded.data && decoded.completed) {
+          localStorage.setItem("sw_hub_v2_data", JSON.stringify(decoded.data));
+          localStorage.setItem("sw_hub_v2_completed", JSON.stringify(decoded.completed));
+          return { data: decoded.data, completed: decoded.completed };
+        }
+      }
+    } catch (e) {
+      console.error("Error al leer datos de la URL", e);
+    }
+    return null;
+  }
+
+  const fromUrl = loadUrlData();
+  let configData = (fromUrl && fromUrl.data) || JSON.parse(localStorage.getItem("sw_hub_v2_data")) || defaultData;
+  let completedSteps = (fromUrl && fromUrl.completed) || JSON.parse(localStorage.getItem("sw_hub_v2_completed")) || defaultCompleted;
 
   const steps = [
     {
@@ -464,16 +504,17 @@
       title: "Desbloqueo de PIN en SIM Digi",
       instructions: `
         <ol>
-          <li>Introduce la Nano-SIM de Digi en un teléfono móvil.</li>
+          <li>Introduce la Nano-SIM de Digi en tu smartphone habitual.</li>
           <li>Ve a <b>Ajustes > Seguridad > Bloqueo de SIM</b> y desactiva el PIN.</li>
-          <li>Desactiva el Wi-Fi en el teléfono y abre una web para confirmar que el bono de datos funciona.</li>
+          <li>Desactiva el Wi-Fi en el móvil y abre una página web para validar que el bono de datos funciona.</li>
+          <li>Haz una llamada corta de prueba para verificar que la línea emite y recibe voz.</li>
         </ol>
       `,
       dataInputs: [
         { label: "Número SIM Digi del reloj:", key: "phoneWatch", type: "tel" }
       ],
       deviceType: "phone",
-      deviceTag: "Ajustes de SIM",
+      deviceTag: "Ajustes de SIM en Smartphone",
       renderScreen: () => `
         <div class="phone-topbar">Seguridad SIM</div>
         <div class="phone-body">
@@ -490,16 +531,17 @@
       title: "Montaje y Encendido",
       instructions: `
         <ul>
-          <li><b>Apaga por completo el reloj</b> antes de abrir la bandeja.</li>
-          <li>Coloca la Nano-SIM con el chip dorado hacia arriba y la muesca alineada.</li>
-          <li>Presiona la tapa de goma para mantener la estanqueidad y enciende el dispositivo.</li>
+          <li><b>Apaga por completo el reloj</b> antes de abrir la ranura.</li>
+          <li>Coloca la Nano-SIM con los pines dorados hacia arriba y la esquina cortada según el dibujo interior.</li>
+          <li>Presiona firmemente la tapa de goma para mantener la estanqueidad al agua.</li>
+          <li>Mantén pulsado el botón lateral durante 3 segundos para encender el reloj.</li>
         </ul>
       `,
       dataInputs: [
         { label: "RegCode (Pegatina trasera o caja):", key: "regCode", type: "text" }
       ],
       deviceType: "watch",
-      deviceTag: "SaveWatch Plus 2",
+      deviceTag: "Pantalla SaveWatch Plus 2",
       renderScreen: () => `
         <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:#94a3b8;">
           <span>09:30</span><span style="color:#38bdf8;">📶 SIM OK</span>
@@ -516,7 +558,7 @@
       badge: "Fase 3 de 12 • Red Local",
       title: "Wi-Fi del Piso en Poio",
       instructions: `
-        <p>Conecta el reloj a la red de casa para ahorrar datos y estabilizar la conexión:</p>
+        <p>Conecta el reloj al Wi-Fi de casa para ahorrar datos móviles y mantener máxima cobertura en interiores:</p>
       `,
       customAction: () => `
         <div style="display:flex; gap:6px; margin-bottom:10px;">
@@ -544,20 +586,20 @@
     },
     {
       badge: "Fase 4 de 12 • Red Móvil 4G",
-      title: "Configuración y Diagnóstico APN Digi",
+      title: "Configuración de Datos APN Digi",
       instructions: `
-        <h4>Método 1: Pantalla Táctil del Reloj (Recomendado):</h4>
+        <h4>Método 1: Pantalla Táctil del Reloj (100% Eficaz):</h4>
         <ol>
-          <li>En el reloj, abre <b>Ajustes > Ajustes de Red > APN</b>.</li>
-          <li>Toca el botón <b>Añadir (+)</b> y escribe:
-            <br>• Nombre: <code>DIGI</code>
-            <br>• APN: <code>internet.digimobil.es</code>
-            <br>• MCC: <code>214</code> | MNC: <code>22</code>
+          <li>En la pantalla del reloj, desliza hasta <b>Ajustes > Ajustes de Red > APN</b>.</li>
+          <li>Pulsa en <b>Añadir (+)</b> o edita el perfil existente y rellena:
+            <br>• <b>Nombre:</b> <code>DIGI</code>
+            <br>• <b>APN:</b> <code>internet.digimobil.es</code>
+            <br>• <b>MCC:</b> <code>214</code> | <b>MNC:</b> <code>22</code>
           </li>
-          <li>Guarda, selecciona el punto <b>DIGI</b> y reinicia el reloj.</li>
+          <li>Guarda los cambios, marca el círculo del perfil <b>DIGI</b> y reinicia el reloj.</li>
         </ol>
-        <h4 style="margin-top:10px;">Método 2: Vía SMS Remoto:</h4>
-        <p style="color:#94a3b8; font-size:0.8rem;">Pulsa el botón para enviar el comando SMS con la clave oficial o la alternativa:</p>
+        <h4 style="margin-top:10px;">Método 2: Enviar Comando SMS desde tu Móvil:</h4>
+        <p style="color:#94a3b8; font-size:0.8rem;">Pulsa para abrir tu aplicación de mensajes con el comando oficial ya redactado:</p>
       `,
       customAction: () => `
         <div style="margin-bottom:10px; display:flex; gap:6px; flex-wrap:wrap;">
@@ -568,7 +610,7 @@
             ✉️ SMS Clave 523681
           </a>
           <a class="btn-native" href="sms:${configData.phoneWatch.replace(/\s+/g, '')}?body=pw,123456,ts%23">
-            🔍 Test de Red TS
+            🔍 Test de Diagnóstico TS
           </a>
         </div>
       `,
@@ -597,7 +639,7 @@
       badge: "Fase 5 de 12 • App Oficial",
       title: "Descarga de SaveFamily",
       instructions: `
-        <p>Instala la aplicación oficial del fabricante en tu teléfono móvil:</p>
+        <p>Instala la aplicación oficial en tu teléfono móvil para gestionar el control parental:</p>
       `,
       customAction: () => `
         <div style="margin-bottom:10px; display:flex; gap:6px; flex-wrap:wrap;">
@@ -627,7 +669,7 @@
       badge: "Fase 6 de 12 • Seguridad Telefónica",
       title: "Agenda Blanca y Números SOS",
       instructions: `
-        <p>Configura los números de auxilio y activa el filtro de llamadas de desconocidos:</p>
+        <p>Configura los 3 teléfonos de auxilio rápido y activa el bloqueo de llamadas no deseadas:</p>
       `,
       customAction: () => `
         <div style="margin-bottom:10px;">
@@ -658,9 +700,9 @@
       title: "Calibración GPS y Geovallas",
       instructions: `
         <ol>
-          <li><b>Frecuencia GPS:</b> Configura el modo normal (10 min) para no agotar la batería.</li>
-          <li><b>Geovalla Casa Poio:</b> Define un radio de seguridad alrededor del piso.</li>
-          <li><b>Geovalla Colegio:</b> Traza el perímetro escolar para recibir alertas de entrada y salida.</li>
+          <li><b>Intervalo GPS:</b> Selecciona modo normal (10 min) para balancear batería y precisión.</li>
+          <li><b>Geovalla Casa Poio:</b> Ajusta el radio seguro alrededor de la vivienda.</li>
+          <li><b>Geovalla Colegio:</b> Marca el perímetro del colegio para recibir avisos push inmediatos.</li>
         </ol>
       `,
       dataInputs: [
@@ -689,9 +731,9 @@
       title: "WhatsApp en el Reloj",
       instructions: `
         <ol>
-          <li>En la app SaveFamily, ve a <b>Tienda de Apps</b> e instala WhatsApp.</li>
+          <li>En la app SaveFamily, entra en <b>Tienda de Aplicaciones</b> e instala WhatsApp.</li>
           <li>Abre WhatsApp en el reloj e introduce el número de la SIM Digi.</li>
-          <li>El SMS de verificación llegará a la bandeja de mensajes del reloj; escríbelo en su pantalla.</li>
+          <li>El SMS de verificación de 6 dígitos llegará a la bandeja de mensajes del reloj; introdúcelo en su pantalla.</li>
         </ol>
       `,
       dataInputs: [
@@ -720,8 +762,8 @@
       title: "Asistente IA Seguro SaveFamily",
       instructions: `
         <ul>
-          <li>Asistente escolar protegido para responder dudas y curiosidades sin acceso a contenidos inapropiados.</li>
-          <li>El menor pulsa el botón del micrófono y pregunta mediante voz natural.</li>
+          <li>Asistente por voz diseñado para resolver dudas escolares e idiomas.</li>
+          <li>Filtro parental estricto para bloquear contenidos inadecuados.</li>
         </ul>
       `,
       customAction: () => `
@@ -750,7 +792,7 @@
       badge: "Fase 10 de 12 • MeteoKid",
       title: "Clima Interactivo",
       instructions: `
-        <p>Previsión meteorológica dinámica en función de la posición GPS del reloj en Poio:</p>
+        <p>Informe del tiempo animado que sugiere la ropa idónea según el pronóstico en Poio:</p>
       `,
       dataInputs: [
         { label: "Municipio:", key: "meteoCity", type: "text" }
@@ -772,7 +814,7 @@
       badge: "Fase 11 de 12 • Horario Lectivo",
       title: "Modo Clase Antidistracción",
       instructions: `
-        <p>Bloquea la pantalla durante el horario de colegio. Las funciones de emergencia SOS se mantienen activas:</p>
+        <p>Bloquea la pantalla durante el horario de clase (la función de socorro SOS sigue activa):</p>
       `,
       dataInputs: [
         { label: "Hora inicio:", key: "schoolTimeStart", type: "time" },
@@ -797,7 +839,7 @@
       badge: "Fase 12 de 12 • Rutinas & Energía",
       title: "Alarmas y Apagado Programado",
       instructions: `
-        <p>Configura las alarmas matinales y el apagado nocturno para aumentar la autonomía:</p>
+        <p>Configura las alarmas matinales y el apagado nocturno para aumentar la autonomía de la batería:</p>
       `,
       dataInputs: [
         { label: "Alarma Despertador:", key: "alarm1Time", type: "time" },
@@ -871,10 +913,10 @@
           updateStepView();
         }
       } catch (ex) {
-        alert("Introduce el número de teléfono directamente en la casilla.");
+        alert("Escribe el teléfono directamente en la casilla.");
       }
     } else {
-      alert("Introduce el número de teléfono directamente en la casilla.");
+      alert("Escribe el teléfono directamente en la casilla.");
     }
   }
 
@@ -951,6 +993,59 @@
     if (newIdx >= 0 && newIdx < steps.length) {
       currentStep = newIdx;
       updateStepView();
+    }
+  }
+
+  // Sincronización Automática mediante Enlace Compartible
+  function shareViaUrl() {
+    const backup = { data: configData, completed: completedSteps };
+    const jsonStr = JSON.stringify(backup);
+    const encoded = btoa(unescape(encodeURIComponent(jsonStr)));
+    const shareUrl = `${window.location.origin}${window.location.pathname}?sync=${encoded}`;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert("¡Enlace copiado! Pégalo por WhatsApp en el otro móvil o ábrelo en el PC. Se cargarán todos los datos automáticamente.");
+      }).catch(() => {
+        prompt("Copia este enlace para abrirlo en otro dispositivo:", shareUrl);
+      });
+    } else {
+      prompt("Copia este enlace para abrirlo en otro dispositivo:", shareUrl);
+    }
+  }
+
+  function exportConfig() {
+    const backup = { data: configData, completed: completedSteps };
+    const jsonStr = JSON.stringify(backup);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(jsonStr).then(() => {
+        alert("¡Código de configuración copiado! Pégalo en el otro dispositivo usando el botón 'Pegar Código'.");
+      }).catch(() => {
+        prompt("Copia este código de respaldo:", jsonStr);
+      });
+    } else {
+      prompt("Copia este código de respaldo:", jsonStr);
+    }
+  }
+
+  function importConfig() {
+    const jsonStr = prompt("Pega aquí el código de configuración copiado:");
+    if (jsonStr) {
+      try {
+        const backup = JSON.parse(jsonStr);
+        if (backup.data && backup.completed) {
+          configData = backup.data;
+          completedSteps = backup.completed;
+          localStorage.setItem("sw_hub_v2_data", JSON.stringify(configData));
+          localStorage.setItem("sw_hub_v2_completed", JSON.stringify(completedSteps));
+          updateStepView();
+          alert("¡Configuración importada con éxito en este dispositivo!");
+        } else {
+          alert("Los datos no tienen un formato válido.");
+        }
+      } catch (e) {
+        alert("Error al procesar el código. Asegúrate de copiarlo completo.");
+      }
     }
   }
 
