@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SaveWatch+ 2 Ultimate Setup Hub</title>
+  <title>SaveWatch Plus 2 • Setup Hub Pro</title>
   <style>
     :root {
       --bg-main: #070b14;
@@ -39,7 +39,7 @@
     }
 
     .app-container {
-      max-width: 100%;
+      max-width: 1200px;
       margin: 0 auto;
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -62,7 +62,7 @@
     }
 
     header h1 {
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       font-weight: 700;
       color: var(--primary);
     }
@@ -152,7 +152,7 @@
     }
 
     .phase-title {
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       color: var(--text-main);
       font-weight: 700;
     }
@@ -163,6 +163,12 @@
       border-radius: 10px;
       padding: 14px;
       font-size: 0.85rem;
+    }
+
+    .instruction-card h4 {
+      color: var(--primary);
+      margin-bottom: 6px;
+      font-size: 0.9rem;
     }
 
     .instruction-card ol, .instruction-card ul {
@@ -282,8 +288,8 @@
     }
 
     .mockup-watch {
-      width: 230px;
-      height: 265px;
+      width: 235px;
+      height: 275px;
       background: #020617;
       border-radius: 40px;
       border: 4px solid #334155;
@@ -376,18 +382,18 @@
   </div>
 
   <div class="step-nav" id="step-nav">
-    <button class="step-pill active" onclick="setStep(0)"><span>1. SIM</span></button>
-    <button class="step-pill" onclick="setStep(1)"><span>2. Hardware</span></button>
+    <button class="step-pill active" onclick="setStep(0)"><span>1. Desbloqueo</span></button>
+    <button class="step-pill" onclick="setStep(1)"><span>2. Montaje</span></button>
     <button class="step-pill" onclick="setStep(2)"><span>3. Wi-Fi</span></button>
-    <button class="step-pill" onclick="setStep(3)"><span>4. APN & SMS</span></button>
+    <button class="step-pill" onclick="setStep(3)"><span>4. APN 4G</span></button>
     <button class="step-pill" onclick="setStep(4)"><span>5. App Oficial</span></button>
     <button class="step-pill" onclick="setStep(5)"><span>6. Agenda SOS</span></button>
-    <button class="step-pill" onclick="setStep(6)"><span>7. GPS & Calibración</span></button>
+    <button class="step-pill" onclick="setStep(6)"><span>7. Calibración GPS</span></button>
     <button class="step-pill" onclick="setStep(7)"><span>8. WhatsApp Pro</span></button>
-    <button class="step-pill" onclick="setStep(8)"><span>9. IA Educativa</span></button>
+    <button class="step-pill" onclick="setStep(8)"><span>9. Asistente IA</span></button>
     <button class="step-pill" onclick="setStep(9)"><span>10. MeteoKid</span></button>
     <button class="step-pill" onclick="setStep(10)"><span>11. Modo Clase</span></button>
-    <button class="step-pill" onclick="setStep(11)"><span>12. Rutinas</span></button>
+    <button class="step-pill" onclick="setStep(11)"><span>12. Alarmas</span></button>
   </div>
 
   <div class="workspace">
@@ -425,12 +431,11 @@
     wifiPass: "ClaveWifiCasa2026",
     apnName: "DIGI",
     apnServer: "internet.digimobil.es",
+    apnMcc: "214",
+    apnMnc: "22",
     sos1: "611 11 11 11",
-    sos1Name: "Papá",
     sos2: "622 22 22 22",
-    sos2Name: "Vanesa",
     sos3: "986 00 00 00",
-    sos3Name: "Casa",
     contact1: "Papá",
     contact2: "Vanesa",
     appEmail: "tucorreo@gmail.com",
@@ -444,17 +449,14 @@
     schoolTimeEnd: "14:00",
     schoolDays: "Lunes a Viernes",
     alarm1Time: "07:45",
-    alarm1Label: "Despertador Colegio",
-    alarm2Time: "20:30",
-    alarm2Label: "Mochila y Deberes",
     autoShutdown: "22:00",
     autoBoot: "07:30"
   };
 
   const defaultCompleted = new Array(12).fill(false);
 
-  let configData = JSON.parse(localStorage.getItem("sw_pro12_data")) || defaultData;
-  let completedSteps = JSON.parse(localStorage.getItem("sw_pro12_completed")) || defaultCompleted;
+  let configData = JSON.parse(localStorage.getItem("sw_hub_v2_data")) || defaultData;
+  let completedSteps = JSON.parse(localStorage.getItem("sw_hub_v2_completed")) || defaultCompleted;
 
   const steps = [
     {
@@ -462,9 +464,9 @@
       title: "Desbloqueo de PIN en SIM Digi",
       instructions: `
         <ol>
-          <li>Introduce la Nano-SIM de Digi en tu smartphone.</li>
-          <li>Accede a <b>Ajustes > Seguridad > Bloqueo de SIM</b> y desactiva la solicitud del PIN.</li>
-          <li>Navega por una web sin Wi-Fi y haz una llamada corta para confirmar que la línea está activa.</li>
+          <li>Introduce la Nano-SIM de Digi en un teléfono móvil.</li>
+          <li>Ve a <b>Ajustes > Seguridad > Bloqueo de SIM</b> y desactiva el PIN.</li>
+          <li>Desactiva el Wi-Fi en el teléfono y abre una web para confirmar que el bono de datos funciona.</li>
         </ol>
       `,
       dataInputs: [
@@ -479,7 +481,7 @@
             <span>Bloqueo PIN: </span><b style="color:#f87171;">DESACTIVADO ⚪</b>
           </div>
           <div style="font-size:0.65rem; color:#94a3b8; margin-top:6px;">Línea: <b>${configData.phoneWatch}</b></div>
-          <div style="background:#064e3b; padding:6px; border-radius:4px; font-size:0.65rem; color:#a7f3d0; margin-top:8px;">✓ SIM liberada para SaveWatch Plus 2</div>
+          <div style="background:#064e3b; padding:6px; border-radius:4px; font-size:0.65rem; color:#a7f3d0; margin-top:8px;">✓ SIM lista para el reloj</div>
         </div>
       `
     },
@@ -488,13 +490,13 @@
       title: "Montaje y Encendido",
       instructions: `
         <ul>
-          <li><b>Apaga totalmente el reloj</b> antes de abrir la bandeja lateral.</li>
-          <li>Inserta la tarjeta Nano-SIM con los pines dorados hacia arriba y la muesca encajada.</li>
-          <li>Asegura el cierre estanco de goma y mantén pulsado el botón para encender.</li>
+          <li><b>Apaga por completo el reloj</b> antes de abrir la bandeja.</li>
+          <li>Coloca la Nano-SIM con el chip dorado hacia arriba y la muesca alineada.</li>
+          <li>Presiona la tapa de goma para mantener la estanqueidad y enciende el dispositivo.</li>
         </ul>
       `,
       dataInputs: [
-        { label: "RegCode (Pegatina trasera / caja):", key: "regCode", type: "text" }
+        { label: "RegCode (Pegatina trasera o caja):", key: "regCode", type: "text" }
       ],
       deviceType: "watch",
       deviceTag: "SaveWatch Plus 2",
@@ -514,7 +516,7 @@
       badge: "Fase 3 de 12 • Red Local",
       title: "Wi-Fi del Piso en Poio",
       instructions: `
-        <p>Selecciona tu red doméstica para volcar las credenciales al reloj y ahorrar datos/batería en casa:</p>
+        <p>Conecta el reloj a la red de casa para ahorrar datos y estabilizar la conexión:</p>
       `,
       customAction: () => `
         <div style="display:flex; gap:6px; margin-bottom:10px;">
@@ -542,43 +544,60 @@
     },
     {
       badge: "Fase 4 de 12 • Red Móvil 4G",
-      title: "APN Digi y Diagnóstico Remoto",
+      title: "Configuración y Diagnóstico APN Digi",
       instructions: `
-        <p>Dispara con 1 toque el SMS nativo con los parámetros oficiales de Digi o el test TS[span_0](start_span)[span_0](end_span):</p>
+        <h4>Método 1: Pantalla Táctil del Reloj (Recomendado):</h4>
+        <ol>
+          <li>En el reloj, abre <b>Ajustes > Ajustes de Red > APN</b>.</li>
+          <li>Toca el botón <b>Añadir (+)</b> y escribe:
+            <br>• Nombre: <code>DIGI</code>
+            <br>• APN: <code>internet.digimobil.es</code>
+            <br>• MCC: <code>214</code> | MNC: <code>22</code>
+          </li>
+          <li>Guarda, selecciona el punto <b>DIGI</b> y reinicia el reloj.</li>
+        </ol>
+        <h4 style="margin-top:10px;">Método 2: Vía SMS Remoto:</h4>
+        <p style="color:#94a3b8; font-size:0.8rem;">Pulsa el botón para enviar el comando SMS con la clave oficial o la alternativa:</p>
       `,
       customAction: () => `
         <div style="margin-bottom:10px; display:flex; gap:6px; flex-wrap:wrap;">
           <a class="btn-native success" id="btn-send-sms" href="sms:${configData.phoneWatch.replace(/\s+/g, '')}?body=pw,123456,apn,internet.digimobil.es,,,21422%23">
-            ✉️ Enviar SMS de APN Digi
+            ✉️ SMS Clave 123456
+          </a>
+          <a class="btn-native" href="sms:${configData.phoneWatch.replace(/\s+/g, '')}?body=pw,523681,apn,internet.digimobil.es,,,21422%23">
+            ✉️ SMS Clave 523681
           </a>
           <a class="btn-native" href="sms:${configData.phoneWatch.replace(/\s+/g, '')}?body=pw,123456,ts%23">
-            🔍 Diagnóstico TS
+            🔍 Test de Red TS
           </a>
         </div>
       `,
       dataInputs: [
-        { label: "Servidor APN:", key: "apnServer", type: "text" }
+        { label: "Nombre APN:", key: "apnName", type: "text" },
+        { label: "Servidor APN:", key: "apnServer", type: "text" },
+        { label: "MCC:", key: "apnMcc", type: "text" },
+        { label: "MNC:", key: "apnMnc", type: "text" }
       ],
-      deviceType: "phone",
-      deviceTag: "SMS Automático",
+      deviceType: "watch",
+      deviceTag: "Pantalla APN en el Reloj",
       renderScreen: () => `
-        <div class="phone-topbar">SMS → ${configData.phoneWatch}</div>
-        <div class="phone-body">
-          <div style="background:#0284c7; color:white; padding:6px; border-radius:8px 8px 0 8px; font-size:0.6rem; margin-top:auto; align-self:flex-end;">
-            pw,123456,apn,internet.digimobil.es,,,21422#
-          </div>
-          <div style="background:#1e293b; color:#38bdf8; padding:6px; border-radius:8px 8px 8px 0; font-size:0.6rem; margin-top:4px;">
-            apn:... OK!
-          </div>
-          <div style="color:#10b981; font-size:0.6rem; text-align:center; font-weight:bold;">✓ 4G Digi Listo</div>
+        <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:#94a3b8;">
+          <span>Ajustes > APN</span><span style="color:#38bdf8;">4G Digi</span>
         </div>
+        <div style="margin:auto 0; text-align:left; font-size:0.65rem;">
+          <div>Nombre: <b style="color:#38bdf8;">${configData.apnName}</b></div>
+          <div>APN: <b>${configData.apnServer}</b></div>
+          <div>MCC: <b>${configData.apnMcc}</b> | MNC: <b>${configData.apnMnc}</b></div>
+          <div style="color:#94a3b8; font-size:0.55rem; margin-top:2px;">Tipo APN: default,supl</div>
+        </div>
+        <div style="background:#064e3b; color:#a7f3d0; padding:3px; border-radius:4px; font-size:0.6rem; text-align:center;">✓ Datos 4G Guardados</div>
       `
     },
     {
       badge: "Fase 5 de 12 • App Oficial",
       title: "Descarga de SaveFamily",
       instructions: `
-        <p>Abre directamente la ficha oficial en la tienda de apps de tu terminal:</p>
+        <p>Instala la aplicación oficial del fabricante en tu teléfono móvil:</p>
       `,
       customAction: () => `
         <div style="margin-bottom:10px; display:flex; gap:6px; flex-wrap:wrap;">
@@ -608,12 +627,12 @@
       badge: "Fase 6 de 12 • Seguridad Telefónica",
       title: "Agenda Blanca y Números SOS",
       instructions: `
-        <p>Usa el selector nativo para importar números de tu agenda sin escribirlos a mano:</p>
+        <p>Configura los números de auxilio y activa el filtro de llamadas de desconocidos:</p>
       `,
       customAction: () => `
         <div style="margin-bottom:10px;">
           <button class="btn-native success" onclick="pickNativeContact('sos1')">
-            📇 Importar SOS 1 del Móvil
+            📇 Importar Contacto del Teléfono
           </button>
         </div>
       `,
@@ -638,12 +657,10 @@
       badge: "Fase 7 de 12 • Ubicación Multicapa",
       title: "Calibración GPS y Geovallas",
       instructions: `
-        <h4>Sistema de Localización Triple:</h4>
         <ol>
-          <li><b>GPS Satelital:</b> Máxima precisión (±5m) en exteriores.</li>
-          <li><b>Posicionamiento Wi-Fi:</b> Triangula redes cercanas cuando está bajo techo.</li>
-          <li><b>LBS (Antenas de Telefonía):</b> Respaldo continuo en túneles o sótanos.</li>
-          <li><b>Geovallas:</b> Marca perímetros seguros con alertas de entrada/salida automáticas.</li>
+          <li><b>Frecuencia GPS:</b> Configura el modo normal (10 min) para no agotar la batería.</li>
+          <li><b>Geovalla Casa Poio:</b> Define un radio de seguridad alrededor del piso.</li>
+          <li><b>Geovalla Colegio:</b> Traza el perímetro escolar para recibir alertas de entrada y salida.</li>
         </ol>
       `,
       dataInputs: [
@@ -669,14 +686,12 @@
     },
     {
       badge: "Fase 8 de 12 • Mensajería Segura",
-      title: "Configuración Oficial de WhatsApp",
+      title: "WhatsApp en el Reloj",
       instructions: `
-        <h4>WhatsApp en SaveWatch Plus 2:</h4>
         <ol>
-          <li>Entra en SaveFamily > <b>Tienda de Aplicaciones</b> > Instala <b>WhatsApp</b> en el reloj.</li>
-          <li>Abre la app en la pantalla del reloj e introduce el número de la SIM Digi.</li>
-          <li>El código de 6 dígitos llegará por SMS a la bandeja de entrada del SaveWatch Plus 2. Escríbelo en pantalla.</li>
-          <li>El menor podrá enviar audios de voz y texto a los contactos autorizados. Puedes bloquear su uso de forma remota.</li>
+          <li>En la app SaveFamily, ve a <b>Tienda de Apps</b> e instala WhatsApp.</li>
+          <li>Abre WhatsApp en el reloj e introduce el número de la SIM Digi.</li>
+          <li>El SMS de verificación llegará a la bandeja de mensajes del reloj; escríbelo en su pantalla.</li>
         </ol>
       `,
       dataInputs: [
@@ -684,7 +699,7 @@
         { label: "Chat Secundario:", key: "contact2", type: "text" }
       ],
       deviceType: "watch",
-      deviceTag: "WhatsApp SaveWatch Plus 2",
+      deviceTag: "WhatsApp Reloj",
       renderScreen: () => `
         <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:#94a3b8;">
           <span>10:00</span><span style="color:#22c55e;">WhatsApp 4G</span>
@@ -692,7 +707,6 @@
         <div style="margin:auto 0; text-align:left; font-size:0.65rem;">
           <div style="background:#1e293b; padding:4px; border-radius:4px; margin-bottom:3px; border-left:3px solid #22c55e;">
             <div style="font-weight:bold; color:#22c55e;">${configData.contact1}</div>
-            <div style="font-size:0.55rem; color:#94a3b8;">Nota de voz enviada</div>
           </div>
           <div style="background:#1e293b; padding:4px; border-radius:4px; border-left:3px solid #22c55e;">
             <div style="font-weight:bold; color:#22c55e;">${configData.contact2}</div>
@@ -705,11 +719,9 @@
       badge: "Fase 9 de 12 • IA Educativa Oficial",
       title: "Asistente IA Seguro SaveFamily",
       instructions: `
-        <h4>Inteligencia Artificial para 10 Años:</h4>
         <ul>
-          <li>El SaveWatch Plus 2 incorpora un asistente de IA integrado diseñado para responder dudas escolares, curiosidades científicas e idiomas.</li>
-          <li><b>Filtro Ético y Parental:</b> Bloquea automáticamente cualquier temática sensible, violenta o inapropiada para menores.</li>
-          <li><b>Interacción por voz:</b> El niño pulsa el micrófono y realiza consultas naturales (ej. <i>"¿Cuál es la distancia a la luna?"</i> o <i>"¿Cómo se dice colegio en inglés?"</i>).</li>
+          <li>Asistente escolar protegido para responder dudas y curiosidades sin acceso a contenidos inapropiados.</li>
+          <li>El menor pulsa el botón del micrófono y pregunta mediante voz natural.</li>
         </ul>
       `,
       customAction: () => `
@@ -718,10 +730,10 @@
         </div>
       `,
       dataInputs: [
-        { label: "Nivel del Filtro de IA:", key: "aiFilterLevel", type: "text" }
+        { label: "Nivel de Filtro IA:", key: "aiFilterLevel", type: "text" }
       ],
       deviceType: "watch",
-      deviceTag: "IA Educativa en el Reloj",
+      deviceTag: "IA Educativa",
       renderScreen: () => `
         <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:#94a3b8;">
           <span>16:30</span><span style="color:#a855f7;">IA SaveFamily</span>
@@ -729,27 +741,22 @@
         <div style="text-align:center; margin:auto 0;">
           <div style="font-size:1.6rem;">🤖</div>
           <div style="font-size:0.65rem; color:#a855f7; font-weight:bold;">"Pregúntame algo"</div>
-          <div style="font-size:0.55rem; color:#94a3b8; margin-top:2px;">Filtro: ${configData.aiFilterLevel}</div>
+          <div style="font-size:0.55rem; color:#94a3b8;">Filtro: ${configData.aiFilterLevel}</div>
         </div>
         <div style="background:#3b0764; color:#e9d5ff; padding:3px; border-radius:4px; font-size:0.55rem; text-align:center;">Seguro para Menores ✓</div>
       `
     },
     {
-      badge: "Fase 10 de 12 • Función MeteoKid",
-      title: "Clima Interactivo MeteoKid",
+      badge: "Fase 10 de 12 • MeteoKid",
+      title: "Clima Interactivo",
       instructions: `
-        <h4>Previsión Meteorológica para Niños:</h4>
-        <ol>
-          <li><b>Sincronización GPS:</b> MeteoKid actualiza la previsión del tiempo basada en la ubicación exacta del reloj en Poio.</li>
-          <li><b>Iconografía Dinámica:</b> Muestra avatares animados y recomendaciones sobre qué ropa vestir (ej. llevar paraguas, chubasquero o gorra).</li>
-          <li>Se actualiza automáticamente cada vez que el reloj se conecta a la red Wi-Fi o datos 4G Digi.</li>
-        </ol>
+        <p>Previsión meteorológica dinámica en función de la posición GPS del reloj en Poio:</p>
       `,
       dataInputs: [
-        { label: "Ciudad / Municipio Sincronizado:", key: "meteoCity", type: "text" }
+        { label: "Municipio:", key: "meteoCity", type: "text" }
       ],
       deviceType: "watch",
-      deviceTag: "MeteoKid SaveWatch Plus 2",
+      deviceTag: "MeteoKid Reloj",
       renderScreen: () => `
         <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:#94a3b8;">
           <span>MeteoKid</span><span style="color:#38bdf8;">Poio 🌤️</span>
@@ -757,7 +764,6 @@
         <div style="text-align:center; margin:auto 0;">
           <div style="font-size:1.8rem;">🌤️ 22°C</div>
           <div style="font-size:0.65rem; color:#38bdf8; font-weight:bold;">${configData.meteoCity}</div>
-          <div style="font-size:0.55rem; color:#94a3b8;">"Cielo despejado con brisa marina"</div>
         </div>
         <div style="background:#0c4a6e; color:#bae6fd; padding:3px; border-radius:4px; font-size:0.55rem; text-align:center;">👕 Ropa ligera recomendada</div>
       `
@@ -766,12 +772,12 @@
       badge: "Fase 11 de 12 • Horario Lectivo",
       title: "Modo Clase Antidistracción",
       instructions: `
-        <p>Bloquea la pantalla y el sonido durante las clases en el colegio (el botón de auxilio SOS permanece siempre activo):</p>
+        <p>Bloquea la pantalla durante el horario de colegio. Las funciones de emergencia SOS se mantienen activas:</p>
       `,
       dataInputs: [
-        { label: "Hora inicio clase:", key: "schoolTimeStart", type: "time" },
-        { label: "Hora fin clase:", key: "schoolTimeEnd", type: "time" },
-        { label: "Días activos:", key: "schoolDays", type: "text" }
+        { label: "Hora inicio:", key: "schoolTimeStart", type: "time" },
+        { label: "Hora fin:", key: "schoolTimeEnd", type: "time" },
+        { label: "Días:", key: "schoolDays", type: "text" }
       ],
       deviceType: "watch",
       deviceTag: "Modo Clase",
@@ -784,14 +790,14 @@
           <div style="font-size:0.6rem; color:#f59e0b;">PANTALLA BLOQUEADA</div>
           <div style="font-size:0.55rem; color:#94a3b8;">${configData.schoolTimeStart} - ${configData.schoolTimeEnd}</div>
         </div>
-        <div style="background:#451a03; padding:3px; border-radius:4px; font-size:0.55rem; text-align:center; color:#fde68a;">SOS Operativo al 100%</div>
+        <div style="background:#451a03; padding:3px; border-radius:4px; font-size:0.55rem; text-align:center; color:#fde68a;">SOS Operativo ✓</div>
       `
     },
     {
-      badge: "Fase 12 de 12 • Hábitos & Autonomía",
+      badge: "Fase 12 de 12 • Rutinas & Energía",
       title: "Alarmas y Apagado Programado",
       instructions: `
-        <p>Fija las alarmas de rutina diaria y programa el apagado nocturno para duplicar la duración de la batería:</p>
+        <p>Configura las alarmas matinales y el apagado nocturno para aumentar la autonomía:</p>
       `,
       dataInputs: [
         { label: "Alarma Despertador:", key: "alarm1Time", type: "time" },
@@ -836,7 +842,7 @@
 
   function updateData(key, value) {
     configData[key] = value;
-    localStorage.setItem("sw_pro12_data", JSON.stringify(configData));
+    localStorage.setItem("sw_hub_v2_data", JSON.stringify(configData));
     renderDeviceScreen();
     
     const smsLink = document.getElementById("btn-send-sms");
@@ -865,7 +871,7 @@
           updateStepView();
         }
       } catch (ex) {
-        alert("Selección manual: escribe el teléfono en la casilla.");
+        alert("Introduce el número de teléfono directamente en la casilla.");
       }
     } else {
       alert("Introduce el número de teléfono directamente en la casilla.");
@@ -874,7 +880,7 @@
 
   function toggleCompletion() {
     completedSteps[currentStep] = !completedSteps[currentStep];
-    localStorage.setItem("sw_pro12_completed", JSON.stringify(completedSteps));
+    localStorage.setItem("sw_hub_v2_completed", JSON.stringify(completedSteps));
     updateStepView();
   }
 
